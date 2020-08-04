@@ -37,3 +37,24 @@ To check loaded data run:
 SELECT COUNT(*) FROM datasets.hits_v1
 SELECT COUNT(*) FROM datasets.visits_v1
 ```
+
+## Query Examples
+```
+SELECT
+    StartURL AS URL,
+    AVG(Duration) AS AvgDuration
+FROM datasets.visits_v1
+WHERE StartDate BETWEEN '2014-03-23' AND '2014-03-30'
+GROUP BY URL
+ORDER BY AvgDuration DESC
+LIMIT 10
+```
+
+```
+SELECT
+    sum(Sign) AS visits,
+    sumIf(Sign, has(Goals.ID, 1105530)) AS goal_visits,
+    (100. * goal_visits) / visits AS goal_percent
+FROM datasets.visits_v1
+WHERE (CounterID = 912887) AND (toYYYYMM(StartDate) = 201403) AND (domain(StartURL) = 'yandex.ru')
+```

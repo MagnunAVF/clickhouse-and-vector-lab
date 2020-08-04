@@ -1,0 +1,8 @@
+# Mac files
+.DS_Store
+
+# sample data files
+clickhouse/dataset_example/hits_v1.tsv.xz
+clickhouse/dataset_example/hits_v1.tsv
+clickhouse/dataset_example/visits_v1.tsv.xz
+clickhouse/dataset_example/visits_v1.tsv

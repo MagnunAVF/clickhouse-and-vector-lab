@@ -1,0 +1,15 @@
+[sources.in]
+  address = "0.0.0.0:9000" # required
+  type = "vector" # required
+
+[transforms.nginx_log_parser]
+  inputs = ['in']
+  type = "tokenizer"
+  field = "message"
+  field_names = ["remote_addr", "time_iso", "request_method", "request_uri", "status", "http_user_agent"]
+
+[sinks.out]
+  host = "http://clickhouse_server:8123" # required
+  inputs = ["nginx_log_parser"] # required
+  table = "nginx_metrics" # required
+  type = "clickhouse" # required

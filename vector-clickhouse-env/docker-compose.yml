@@ -1,0 +1,38 @@
+version: '3'
+services:
+  nginx_openresty:
+    build: ./nginx-openresty
+    container_name: nginx_openresty
+    hostname: nginx_openresty
+    command: bash -c "nginx && vector --config vector.toml"
+    depends_on:
+      - vector_server
+    links:
+      - vector_server
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-openresty/conf.d:/etc/nginx/conf.d
+  vector_server:
+    image: timberio/vector:latest-alpine
+    container_name: vector_server
+    hostname: vector_server
+    depends_on:
+      - clickhouse_server
+    links:
+      - clickhouse_server
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./vector-service/vector.toml:/etc/vector/vector.toml
+  clickhouse_server:
+    image: yandex/clickhouse-server
+    container_name: clickhouse_server
+    hostname: clickhouse_server
+    ports:
+      - "8123:8123"
+      - "9001:9000"
+      - "9009:9009"
+    volumes:
+      - ./clickhouse-server/init.sh:/docker-entrypoint-initdb.d/init.sh

@@ -1,6 +1,6 @@
 # ClickHouse Tutorial
 
-Example of single node server with initial data.
+Example of single node server with sample data (anonymized data of Yandex.Metrica).
 
 ## References
 * https://clickhouse.tech/docs/en/getting-started/tutorial/

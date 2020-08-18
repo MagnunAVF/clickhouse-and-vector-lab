@@ -7,6 +7,7 @@ services:
     command: bash -c "nginx && vector --config vector.toml"
     depends_on:
       - vector_server
+      - clickhouse_server
     links:
       - vector_server
     ports:

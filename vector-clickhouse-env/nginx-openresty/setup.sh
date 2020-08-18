@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # prerequisites
-yum -y update
 yum install -y sudo curl
 
 mkdir -p /var/log/nginx

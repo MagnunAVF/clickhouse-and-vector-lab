@@ -17,7 +17,7 @@ docker-compose up
 ### Sample data
 After run, you can populate sample data with:
 ```
-./sample.sh
+python3 sample.py
 ```
 
 ## Access data in grafana

@@ -14,12 +14,15 @@ sudo rpm -i vector-x86_64.rpm
 
 # Config vector
 cat <<-VECTORCFG > vector.toml
-[sources.in]
-  include = ["/var/log/nginx/access.log"] # required
+[sources.nginx_access_log]
   type = "file" # required
+  ignore_older = 86400 # optional, no default, seconds
+  include = ["/var/log/nginx/access.log"] # required
+  start_at_beginning = false # optional, default
 
-[sinks.out]
-  address = "vector_server:9000" # required
-  inputs = ["in"] # required
+[sinks.vector_server]
   type = "vector" # required
+  address = "vector_server:9000" # required
+  inputs = ["nginx_access_log"] # required
+  healthcheck = true # optional, default
 VECTORCFG

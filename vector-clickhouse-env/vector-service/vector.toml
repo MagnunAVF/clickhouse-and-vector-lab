@@ -1,15 +1,49 @@
-[sources.in]
-  address = "0.0.0.0:9000" # required
+[sources.vector_client]
   type = "vector" # required
+  address = "0.0.0.0:9000" # required
 
 [transforms.nginx_log_parser]
-  inputs = ['in']
   type = "tokenizer"
+  inputs = ['vector_client']
+  drop_field = true # optional, default
   field = "message"
-  field_names = ["remote_addr", "time_iso", "request_method", "request_uri", "status", "http_user_agent"]
+  field_names = ["remote_addr", "timestamp", "request_method", "request_uri", "status", "http_user_agent"]
 
-[sinks.out]
-  host = "http://clickhouse_server:8123" # required
+[transforms.remove_fields]
+  type = "remove_fields" # required
   inputs = ["nginx_log_parser"] # required
-  table = "nginx_metrics" # required
+  fields = ["file", "source_type"] # required
+
+[transforms.lua_handler]
+  # General
+  type = "lua" # required
+  inputs = ["remove_fields"] # required
+  version = "2" # required
+
+  # Hooks
+  hooks.process = """
+  function (event, emit)
+    -- format: 2020-08-18T12:07:50+00:00
+    local timestamp = event.log.timestamp
+    -- new format: 2020-08-18 12:07:50
+    local new_timestamp = timestamp:gsub("+00:00", ""):gsub("T", " ")
+
+    event.log.timestamp = new_timestamp
+
+    -- Very important! Emit the processed event.
+    emit(event)
+  end
+  """
+
+[sinks.clickhouse_server]
   type = "clickhouse" # required
+  host = "http://clickhouse_server:8123" # required
+  inputs = ["lua_handler"] # required
+  table = "nginx_metrics" # required
+  healthcheck = true # optional, default
+  compression = "gzip" # optional, default
+
+[sinks.console]
+  type = "console"
+  inputs = ["lua_handler"]
+  encoding.codec = "json"

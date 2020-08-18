@@ -37,3 +37,14 @@ services:
       - "9009:9009"
     volumes:
       - ./clickhouse-server/init.sh:/docker-entrypoint-initdb.d/init.sh
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    hostname: grafana
+    depends_on:
+      - clickhouse_server
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,vertamedia-clickhouse-datasource

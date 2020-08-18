@@ -6,15 +6,18 @@ services:
     hostname: nginx_openresty
     command: bash -c "nginx && vector --config vector.toml"
     depends_on:
+      - example_api
       - vector_server
       - clickhouse_server
     links:
       - vector_server
+      - example_api
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx-openresty/conf.d:/etc/nginx/conf.d
+      - ./nginx-openresty/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
   vector_server:
     image: timberio/vector:latest-alpine
     container_name: vector_server
@@ -48,3 +51,7 @@ services:
     environment:
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,vertamedia-clickhouse-datasource
+  example_api:
+    build: ./api
+    container_name: example_api
+    hostname: example_api
